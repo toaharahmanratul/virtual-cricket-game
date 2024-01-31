@@ -148,7 +148,7 @@ export const getServerSideProps = async (context) => {
   const { gameId } = context.params;
   try {
     const response = await fetch(
-      `https://virtual-cricket-game.vercel.app//api/match-summary/${gameId}`,
+      `https://virtual-cricket-game.vercel.app/api/match-summary/${gameId}`,
       {
         method: "GET",
       }
