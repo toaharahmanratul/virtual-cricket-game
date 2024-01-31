@@ -1,0 +1,3 @@
+username: toahashellbeehaken
+password: dDdd5Lw458OoP8Sc
+MongoDB URL: mongodb+srv://toahashellbeehaken:dDdd5Lw458OoP8Sc@cluster0.gfy8pv4.mongodb.net/?retryWrites=true&w=majority
