@@ -146,14 +146,13 @@ export default Summary;
 
 export const getServerSideProps = async (context) => {
   const { gameId } = context.params;
-  const baseUrl =
-    process.env.NODE_ENV === "production"
-      ? process.env.NEXT_PUBLIC_VERCEL_URL
-      : "http://localhost:3000";
   try {
-    const response = await fetch(`${baseUrl}/api/match-summary/${gameId}`, {
-      method: "GET",
-    });
+    const response = await fetch(
+      `https://virtual-cricket-game.vercel.app//api/match-summary/${gameId}`,
+      {
+        method: "GET",
+      }
+    );
     const data = await response.json();
 
     const { success, message, gameStatistics } = data;
