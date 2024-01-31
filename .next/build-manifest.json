@@ -31,6 +31,16 @@
       "static/chunks/webpack.js",
       "static/chunks/main.js",
       "static/chunks/pages/select-teams.js"
+    ],
+    "/simulate-match": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/simulate-match.js"
+    ],
+    "/summary/[gameId]": [
+      "static/chunks/webpack.js",
+      "static/chunks/main.js",
+      "static/chunks/pages/summary/[gameId].js"
     ]
   },
   "ampFirstPages": []

@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { teamsData, teamAbbreviations } from "@/data/teams";
+import { teamAbbreviations } from "@/data/teams";
 import styles from "./styles/simulate-match.module.css";
 import { useRouter } from "next/router";
 import { useDispatch, useSelector } from "react-redux";
 import { initializeInningsStat } from "@/utils/inningsUtils";
 import { setGameStatistics } from "../GameSlice";
+import BannerTop from "./BannerTop";
+import BattingSide from "./BattingSide";
+import BowlingSide from "./BowlingSide";
 
 let randomBallValue;
 const ballPossibilities = [0, 1, 2, 3, 4, 6, "wk"];
@@ -15,6 +18,7 @@ const SimulateMatch = () => {
 
   const gameStates = useSelector((state) => state.game.gameStates);
   const gameStatistics = useSelector((state) => state.game.gameStatistics);
+  const gameId = useSelector((state) => state.game.gameId);
 
   const overs = gameStates.overs;
   const [battingTeam, setBattingTeam] = useState(
@@ -57,12 +61,20 @@ const SimulateMatch = () => {
   const [secondInningsStat, setSecondInningsStat] = useState(
     gameStatistics.secondInningsStat || null
   );
-  const t1 = String(battingTeam);
-  const t2 = String(bowlingTeam);
+  const [mounted, setMounted] = useState(false);
 
-  console.log({ firstInningsStat, secondInningsStat });
+  console.log(gameStatistics);
+  console.log(gameId);
 
   useEffect(() => {
+    setMounted(true);
+    return () => {
+      setMounted(false);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     if (thisOverBall === 6) {
       setThisOverBall(0);
       setTotalOver((over) => over + 1);
@@ -105,9 +117,12 @@ const SimulateMatch = () => {
     totalWicketFallen,
     isFirstInningsOver,
     isGameOver,
+    mounted,
   ]);
 
+  // For batting Stat
   useEffect(() => {
+    if (!mounted) return;
     if (!isGameOver) {
       if (!isFirstInningsOver) {
         if (!(thisOver.length === 0 && totalOver > 0)) {
@@ -353,10 +368,11 @@ const SimulateMatch = () => {
         setSecondInningsStat(initializeInningsStat(battingTeam, bowlingTeam));
       }
     }
-  }, [thisOver]);
+  }, [thisOver, mounted]);
 
   // For bowling Stat
   useEffect(() => {
+    if (!mounted) return;
     if (!isFirstInningsOver) {
       if ((rand || rand === 0) && !(thisOver.length === 0 && totalOver > 0)) {
         setFirstInningsStat((prevStat) => {
@@ -431,9 +447,11 @@ const SimulateMatch = () => {
 
     // To store
     saveStatToStore();
-  }, [thisOver]);
+  }, [thisOver, mounted]);
 
+  // For handling bowler change
   useEffect(() => {
+    if (!mounted) return;
     if (!isFirstInningsOver) {
       setFirstInningsStat((prevStat) => {
         const updatedBowlingTeamStat = prevStat.bowlingTeamStat.map(
@@ -509,7 +527,68 @@ const SimulateMatch = () => {
         };
       });
     }
-  }, [currentBowler]);
+  }, [currentBowler, mounted]);
+
+  // For real time DB update
+  useEffect(() => {
+    updateGameStat();
+  }, [
+    battingTeam,
+    bowlingTeam,
+    previousBowler,
+    currentBowler,
+    thisOver,
+    thisOverBall,
+    totalOver,
+    totalScore,
+    totalWicketFallen,
+    isFirstInningsOver,
+    target,
+    isGameOver,
+    winningText,
+    rand,
+    firstInningsStat,
+    secondInningsStat,
+  ]);
+
+  const updateGameStat = async () => {
+    try {
+      const res = await fetch(`/api/save-game/${gameId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          gameStatistics: {
+            battingTeam,
+            bowlingTeam,
+            previousBowler,
+            currentBowler,
+            thisOver,
+            thisOverBall,
+            totalOver,
+            totalScore,
+            totalWicketFallen,
+            isFirstInningsOver,
+            target,
+            isGameOver,
+            winningText,
+            rand,
+            firstInningsStat,
+            secondInningsStat,
+          },
+        }),
+      });
+
+      if (res.status === 200) {
+        const data = await res.json();
+        const { gameStat } = data;
+        // console.log("Update Function: ", gameStat);
+      }
+    } catch (error) {
+      console.error("Error Updating Statistics", error);
+    }
+  };
 
   const handleBowlerChange = (e) => {
     setCurrentBowler(e.target.value);
@@ -563,75 +642,26 @@ const SimulateMatch = () => {
   };
 
   const handleMatchSummary = () => {
-    router.push("/summary");
+    updateGameStat();
+    router.push(`/summary/${gameId}`);
   };
 
   return (
     <div className={`${styles.mainContainer}`}>
-      <div className={`${styles.textDiv}`}>
-        <div className={styles.inLineBLock}>
-          <h1>{t1}</h1>
-          <h1>VS</h1>
-          <h1>{t2}</h1>
-        </div>
-        <h2>
-          {isFirstInningsOver === true ? `Second Innings` : `First Innings`}
-        </h2>
-        <h2>{isFirstInningsOver === true && `Target: ${target}`}</h2>
-      </div>
+      <BannerTop
+        battingTeam={battingTeam}
+        bowlingTeam={bowlingTeam}
+        isFirstInningsOver={isFirstInningsOver}
+        target={target}
+      />
 
       <div className={`${styles.grid}`}>
-        <div className={`${styles.childDIv}`}>
-          <h1>Batting Team</h1>
-          <h2>{battingTeam}</h2> <br />
-          <div>
-            <table className={`${styles.playersTable}`}>
-              {!isFirstInningsOver &&
-                firstInningsStat.battingTeamStat.map((playerStat, index) => (
-                  <tr key={index}>
-                    <td
-                      className={
-                        playerStat.isOnPitch ? `${styles.isOnPitch}` : ""
-                      }
-                    >
-                      {playerStat.player}
-                      {playerStat.isOnStrike && (
-                        <span className={styles.star}>*</span>
-                      )}
-                      {(playerStat.ballsFaced > 0 ||
-                        playerStat.isOnPitch ||
-                        playerStat.isOut === true) && (
-                        <span className={styles.runsBalls}>
-                          {`${playerStat.runs} (${playerStat.ballsFaced})`}
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              {isFirstInningsOver &&
-                secondInningsStat &&
-                secondInningsStat.battingTeamStat.map((playerStat, index) => (
-                  <tr key={index}>
-                    <td
-                      className={
-                        playerStat.isOnPitch ? `${styles.isOnPitch}` : ""
-                      }
-                    >
-                      {playerStat.player}
-                      {playerStat.isOnStrike && (
-                        <span className={styles.star}>*</span>
-                      )}
-                      {(playerStat.ballsFaced > 0 || playerStat.isOnPitch) && (
-                        <span className={styles.runsBalls}>
-                          {`${playerStat.runs} (${playerStat.ballsFaced})`}
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-            </table>
-          </div>
-        </div>
+        <BattingSide
+          battingTeam={battingTeam}
+          isFirstInningsOver={isFirstInningsOver}
+          firstInningsStat={firstInningsStat}
+          secondInningsStat={secondInningsStat}
+        />
 
         <div className={`${styles.middleDiv}`}>
           <div className={`${styles.scoreDiv}`}>
@@ -677,76 +707,15 @@ const SimulateMatch = () => {
             </button>
           </div>
         </div>
-        <div className={`${styles.childDIv}`}>
-          <h1>Bowling Team</h1>
-          <h2>{bowlingTeam}</h2> <br />
-          <div>
-            <table className={`${styles.playersTable}`}>
-              {!isFirstInningsOver &&
-                firstInningsStat.bowlingTeamStat.map((playerStat, index) => (
-                  <tr key={index}>
-                    <td
-                      className={
-                        playerStat.isCurrentBowler
-                          ? `${styles.isCurrentBowler}`
-                          : ""
-                      }
-                    >
-                      {playerStat.player}
-                    </td>
-                  </tr>
-                ))}
-              {isFirstInningsOver &&
-                secondInningsStat &&
-                secondInningsStat.bowlingTeamStat.map((playerStat, index) => (
-                  <tr key={index}>
-                    <td
-                      className={
-                        playerStat.isCurrentBowler
-                          ? `${styles.isCurrentBowler}`
-                          : ""
-                      }
-                    >
-                      {playerStat.player}
-                    </td>
-                  </tr>
-                ))}
-            </table>
-          </div>
-          <br />
-          <div className={styles.selecBowlerDropdown}>
-            <label htmlFor="bowlers">Select a bowler </label>
-            <select
-              name="bowlers"
-              id="bowlers"
-              onChange={handleBowlerChange}
-              disabled={currentBowler}
-            >
-              <option value="" disabled>
-                You Can't Select Previous Bowler
-              </option>
-              {!isFirstInningsOver &&
-                firstInningsStat.bowlingTeamStat.map(
-                  (bowler) =>
-                    !bowler.isPreviousBowler && (
-                      <option key={bowler.player} value={bowler.player}>
-                        {bowler.player}
-                      </option>
-                    )
-                )}
-              {isFirstInningsOver &&
-                secondInningsStat &&
-                secondInningsStat.bowlingTeamStat.map(
-                  (bowler) =>
-                    !bowler.isPreviousBowler && (
-                      <option key={bowler.player} value={bowler.player}>
-                        {bowler.player}
-                      </option>
-                    )
-                )}
-            </select>
-          </div>
-        </div>
+
+        <BowlingSide
+          bowlingTeam={bowlingTeam}
+          isFirstInningsOver={isFirstInningsOver}
+          firstInningsStat={firstInningsStat}
+          secondInningsStat={secondInningsStat}
+          handleBowlerChange={handleBowlerChange}
+          currentBowler={currentBowler}
+        />
       </div>
     </div>
   );

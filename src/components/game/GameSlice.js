@@ -6,6 +6,7 @@ const initialGame = {
     bowlingTeam: "",
     overs: null,
   },
+  gameId: null,
   gameStatistics: {
     battingTeam: null,
     bowlingTeam: null,
@@ -35,6 +36,9 @@ export const gameSlice = createSlice({
       state.gameStates.bowlingTeam = action.payload.bowlingTeam;
       state.gameStates.overs = action.payload.overs;
     },
+    setGameId: (state, action) => {
+      state.gameId = action.payload;
+    },
     setGameStatistics: (state, action) => {
       state.gameStatistics.battingTeam = action.payload.battingTeam;
       state.gameStatistics.bowlingTeam = action.payload.bowlingTeam;
@@ -61,6 +65,6 @@ export const resetGameStatistics = (state) => {
   state.gameStatistics = initialGame.gameStatistics;
 };
 
-export const { setGameStates, setGameStatistics } = gameSlice.actions;
+export const { setGameStates, setGameId, setGameStatistics } = gameSlice.actions;
 
 export default gameSlice.reducer;

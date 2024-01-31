@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import { teamsData } from "@/data/teams";
 import styles from "./styles/select-teams.module.css";
 import { useRouter } from "next/router";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   setGameStates,
   resetGameStatistics,
   setGameStatistics,
+  setGameId,
 } from "@/components/game/GameSlice";
 
 const SelectTeams = () => {
@@ -21,6 +22,8 @@ const SelectTeams = () => {
   const [tossWinner, setTossWinner] = useState(null);
   const [battingTeam, setBattingTeam] = useState(null);
   const [bowlingTeam, setBowlingTeam] = useState(null);
+  const gameStatistics = useSelector((state) => state.game.gameStatistics);
+  const gameId = useSelector((state) => state.game.gameId);
 
   useEffect(() => {
     if (battingTeam !== null && bowlingTeam !== null) {
@@ -28,6 +31,27 @@ const SelectTeams = () => {
       navigateToSimulation();
     }
   }, [bowlingTeam]);
+
+  const createNewGame = async () => {
+    try {
+      const res = await fetch("/api/create-new-game", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ gameStatistics }),
+      });
+      if (res.status === 200) {
+        const data = await res.json();
+        const { _id } = await data;
+        // console.log("from fn _id: ", _id);
+        dispatch(setGameId(_id));
+      }
+    } catch (error) {
+      console.error("Error creating a new game:", error);
+    }
+  };
+  // console.log("Outside fn _id: ", gameId);
 
   const handleTeam1Change = (e) => {
     const selectedTeam = e.target.value;
@@ -51,7 +75,6 @@ const SelectTeams = () => {
 
   const handleToss = () => {
     setTossWinner(Math.round(Math.random()) + 1);
-    console.log(tossWinner);
   };
 
   const handleBat = () => {
@@ -102,8 +125,10 @@ const SelectTeams = () => {
 
   const navigateToSimulation = () => {
     if (battingTeam && bowlingTeam) {
-      console.log({ battingTeam, bowlingTeam });
+      // console.log({ battingTeam, bowlingTeam });
+      createNewGame();
       router.push("/simulate-match");
+      // console.log(gameStatistics);
     }
   };
 

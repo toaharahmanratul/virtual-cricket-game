@@ -1,0 +1,85 @@
+.mainContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.textDiv {
+  padding: 30px 0px;
+  width: 100%;
+  background-color: black;
+  color: orangered;
+  text-align: center;
+}
+
+.textDiv h1 {
+  font-size: 3rem;
+}
+.textDiv h2 {
+  font-size: 2.2rem;
+  color: aliceblue;
+  margin-top: 10px;
+}
+
+.parentDiv {
+  width: 100%;
+  min-height: 600px;
+  background-color: #333;
+  color: aliceblue;
+  margin-top: 20px;
+  text-align: center;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.parentDiv h1 {
+  color: orangered;
+}
+
+.inningsDiv {
+  padding: 0px 25px;
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.battingSummary,
+.bowlingSummary {
+  width: 45%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Align tables to the left */
+}
+
+.battingSummary table,
+.bowlingSummary table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  font-weight: 550;
+}
+
+.battingSummary table th,
+.battingSummary table td,
+.bowlingSummary table th,
+.bowlingSummary table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+.battingSummary table th,
+.bowlingSummary table th {
+  text-align: center;
+}
+
+.battingSummary table td:first-child,
+.bowlingSummary table td:first-child {
+  text-align: left;
+}
