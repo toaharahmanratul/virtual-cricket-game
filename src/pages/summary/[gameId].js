@@ -145,10 +145,11 @@ const Summary = ({ gameId, gameStatistics }) => {
 export default Summary;
 
 export const getServerSideProps = async (context) => {
+  const vercelToken = "16nPV7eeOVtYGcLWcUdvdPA7";
   const { gameId } = context.params;
   try {
     const response = await fetch(
-      `https://virtual-cricket-game.vercel.app/api/match-summary/${gameId}`,
+      `virtual-cricket-game.vercel.app/api/match-summary/${gameId}`,
       {
         method: "GET",
       }

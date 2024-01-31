@@ -3,6 +3,6 @@
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
   "/select-teams": "pages/select-teams.js",
-  "/summary/[gameId]": "pages/summary/[gameId].js",
-  "/simulate-match": "pages/simulate-match.js"
+  "/simulate-match": "pages/simulate-match.js",
+  "/summary/[gameId]": "pages/summary/[gameId].js"
 }
