@@ -2,11 +2,8 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/": "pages/index.js",
   "/select-teams": "pages/select-teams.js",
-  "/simulate-match": "pages/simulate-match.js",
-  "/api/create-new-game": "pages/api/create-new-game.js",
-  "/api/save-game/[gameId]": "pages/api/save-game/[gameId].js",
   "/summary/[gameId]": "pages/summary/[gameId].js",
+  "/": "pages/index.js",
   "/api/match-summary/[gameId]": "pages/api/match-summary/[gameId].js"
 }
