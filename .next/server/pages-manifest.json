@@ -4,6 +4,5 @@
   "/_document": "pages/_document.js",
   "/select-teams": "pages/select-teams.js",
   "/summary/[gameId]": "pages/summary/[gameId].js",
-  "/": "pages/index.js",
-  "/api/match-summary/[gameId]": "pages/api/match-summary/[gameId].js"
+  "/simulate-match": "pages/simulate-match.js"
 }

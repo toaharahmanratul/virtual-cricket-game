@@ -146,9 +146,10 @@ export default Summary;
 
 export const getServerSideProps = async (context) => {
   const { gameId } = context.params;
-  const baseUrl = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : "http://localhost:3000";
+  const baseUrl =
+    process.env.NODE_ENV === "production"
+      ? process.env.NEXT_PUBLIC_VERCEL_URL
+      : "http://localhost:3000";
   try {
     const response = await fetch(`${baseUrl}/api/match-summary/${gameId}`, {
       method: "GET",

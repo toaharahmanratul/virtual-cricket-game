@@ -22,10 +22,10 @@
       "static/chunks/main.js",
       "static/chunks/pages/_error.js"
     ],
-    "/select-teams": [
+    "/simulate-match": [
       "static/chunks/webpack.js",
       "static/chunks/main.js",
-      "static/chunks/pages/select-teams.js"
+      "static/chunks/pages/simulate-match.js"
     ],
     "/summary/[gameId]": [
       "static/chunks/webpack.js",
