@@ -1,5 +1,6 @@
 import React from "react";
 import styles from "@/components/game/summary/styles/summary.module.css";
+import { BASE_API_URL } from "@/utils/constants";
 
 const Summary = ({ gameId, gameStatistics }) => {
   if (!gameStatistics) {
@@ -149,7 +150,7 @@ export const getServerSideProps = async (context) => {
   const { gameId } = context.params;
   try {
     const response = await fetch(
-      `https://virtual-cricket-game.vercel.app/api/match-summary/${gameId}`,
+      `${BASE_API_URL}/api/match-summary/${gameId}`,
       {
         method: "GET",
       }
